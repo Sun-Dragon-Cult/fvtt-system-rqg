@@ -613,25 +613,12 @@ export function localize(key: string, data?: Record<string, unknown>): string {
   return result;
 }
 
-export function localizeItemType(itemType: ItemTypeEnum): string {
+export function localizeItemType(itemType: ItemTypeEnum | "reputation"): string {
   return localize("TYPES.Item." + itemType);
 }
 
 export function localizeDocumentName(documentName: string | undefined): string {
   return documentName ? localize("DOCUMENT." + documentName) : "";
-}
-
-/**
- * Formats the value as a modifier, ie negative numbers have a "-" and zero or positive numbers have a "+"
- * @param value The value to format
- * @returns A string with the value formatted as a modifier.
- */
-export function formatModifier(value: number): string {
-  if (value < 0) {
-    return String(value);
-  } else {
-    return "+" + String(value);
-  }
 }
 
 /**

@@ -1,11 +1,10 @@
 {
   "id": "rqg",
-  "type": "system",
   "title": "RuneQuest Glorantha",
   "description": "A RuneQuest Glorantha system implementation.",
   "version": "99999.0.0-localhost",
   "compatibility": {
-    "minimum": 11,
+    "minimum": 12,
     "verified": 12
   },
   "license": "UNLICENSED",
@@ -29,8 +28,10 @@
   "socket": true,
   "primaryTokenAttribute": "attributes.hitPoints.value",
   "secondaryTokenAttribute": "attributes.magicPoints.value",
-  "gridDistance": 1.5,
-  "gridUnits": "m",
+  "grid": {
+    "distance": 1.5,
+    "units": "m"
+  },
   "relationships": {
     "recommends": [
       {

@@ -1,0 +1,73 @@
+{{log "*** Attack Dialog" this}}
+<form>
+  <header class="roll-header">
+    <h1>{{weaponItem.name}}</h1>
+    <div class="sub-header">{{abilityChance}}%</div>
+  </header>
+  <div class="key-value-grid p-0 mb-1-5rem">
+    <label>
+      {{localize "RQG.Dialog.Attack.WeaponUsage"}}
+    </label>
+    <select name="usageType">
+      {{selectOptions usageTypeOptions selected=object.usageType localize=true}}
+    </select>
+
+    <label>
+      {{localize "RQG.Dialog.AbilityRoll.Augment"}}
+    </label>
+    <select name="augmentModifier">
+      {{selectOptions augmentOptions selected=object.augmentModifier localize=true}}
+    </select>
+
+    <label>
+      {{localize "RQG.Dialog.Attack.ProneTarget"}}
+    </label>
+    <div>
+      <input type="checkbox" name="proneTarget" {{checked object.proneTarget}}>
+      {{#if object.proneTarget}} +40%{{/if}}
+    </div>
+
+    <label>
+      {{localize "RQG.Dialog.Attack.UnawareTarget"}}
+    </label>
+    <div>
+      <input type="checkbox" name="unawareTarget" {{checked object.unawareTarget}}>
+      {{#if object.unawareTarget}} +40%{{/if}}
+    </div>
+
+    <label>
+      {{localize "RQG.Dialog.Attack.Darkness"}}
+    </label>
+    <div>
+      <input type="checkbox" name="darkness" {{checked object.darkness}}>
+      {{#if object.darkness}} -75%{{/if}}
+    </div>
+
+    <input type="text" style="text-align:end;font-weight:bold;" value="{{object.otherModifierDescription}}" name="otherModifierDescription">
+    <div>
+      <input type="number" value="{{object.otherModifier}}" name="otherModifier"> %
+    </div>
+
+    <label>
+      {{localize "RQG.Dialog.Attack.DamageBonusFrom"}}
+    </label>
+    <select name="damageBonus">
+      {{selectOptions damageBonusSourceOptions selected=object.damageBonus}}
+    </select>
+  </div>
+  <div class="flexrow flex-wrap gap03rem">
+    <div class="target-box" data-tooltip="{{localize "RQG.Dialog.Common.TargetChance"}}">
+      <i class="fa-solid fa-bullseye"></i><br>
+      {{totalChance}}%
+    </div>
+    {{#with (lookup weaponItem.system.usage weaponItem.system.defaultUsage)}}
+      {{#each combatManeuvers}}
+        {{#unless (eq damageType "parry")}}
+        <button data-attack={{damageType}} name="combatManeuverRoll">
+          {{name}}
+        </button>
+        {{/unless}}
+      {{/each}}
+    {{/with}}
+  </div>
+</form>

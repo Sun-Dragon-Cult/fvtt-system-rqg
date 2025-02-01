@@ -25,7 +25,7 @@ export const runeMenuOptions = (
     callback: async (el: JQuery) => {
       const itemId = getRequiredDomDataset(el, "item-id");
       const item = actor.items.get(itemId);
-      await item?.toChat();
+      await item?.abilityRoll();
     },
   },
   {
@@ -36,7 +36,7 @@ export const runeMenuOptions = (
       const itemId = getRequiredDomDataset(el, "item-id");
       const item = actor.items.get(itemId);
       assertItemType(item?.type, ItemTypeEnum.Rune);
-      await item?.abilityRoll();
+      await item?.abilityRollImmediate();
     },
   },
   {

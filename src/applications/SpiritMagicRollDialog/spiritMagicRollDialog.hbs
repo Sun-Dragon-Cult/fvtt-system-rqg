@@ -1,0 +1,50 @@
+<form>
+  <header class="roll-header">
+    <h1>{{spellName}}</h1>
+    <div class="sub-header">{{spellSignature}}</div>
+  </header>
+  <div class="key-value-grid p-0 mb-1-5rem">
+    <label>
+      {{localize "RQG.Dialog.SpiritMagicRoll.LevelUsed"}}
+    </label>
+    <div>
+      <input type="number" {{#unless isVariable}}class="readonly"{{/unless}} name="levelUsed" value={{object.levelUsed}}>
+      {{localize "RQG.Actor.Attributes.MagicPoints"}}
+    </div>
+
+    <label>
+      {{localize "RQG.Dialog.SpiritMagicRoll.Boost"}}
+    </label>
+    <div>
+      <input type="number" name="boost" value={{object.boost}}>
+      {{localize "RQG.Actor.Attributes.MagicPoints"}}
+    </div>
+
+    <label>
+      {{localize "RQG.Dialog.SpiritMagicRoll.Augment"}}
+    </label>
+    <select name="augmentModifier">
+      {{selectOptions augmentOptions selected=object.augmentModifier localize=true}}
+    </select>
+
+    <label>
+      {{localize "RQG.Dialog.SpiritMagicRoll.Meditate"}}
+    </label>
+    <select name="meditateModifier">
+      {{selectOptions meditateOptions selected=object.meditateModifier localize=true}}
+    </select>
+
+    <input type="text" style="text-align:end;font-weight:bold;" value="{{object.otherModifierDescription}}" name="otherModifierDescription">
+    <div>
+      <input type="number" value="{{object.otherModifier}}" name="otherModifier"> %
+    </div>
+  </div>
+
+  <div class="flexrow flex-wrap gap03rem">
+    <div class="target-box" data-tooltip="{{localize "RQG.Dialog.Common.TargetChance"}}">
+      <i class="fa-solid fa-bullseye"></i><br>
+      {{totalChance}}%
+    </div>
+    <button data-spirit-magic-roll>{{localize "RQG.Game.Roll"}}</button>
+  </div>
+</form>

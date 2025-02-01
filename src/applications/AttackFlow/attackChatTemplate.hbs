@@ -1,0 +1,68 @@
+{{log "attackChatTemplate" this}}
+<div class="rqg chat-card">
+  <div class="flexrow flex-align-center gap03rem">
+    <span data-visible-actor-uuid="{{attackingActorUuid}}">{{{attackRollHtml}}}</span>
+    <span data-visible-actor-uuid="{{defendingActorUuid}}">{{{defendRollHtml}}}</span>
+  </div>
+
+  {{#if (eq attackState 'Attacked')}}
+    <div class="flexrow">
+      <button data-visible-actor-uuid="{{defendingActorUuid}}"
+              data-defence="parry">Parry
+      </button>
+      <button data-visible-actor-uuid="{{defendingActorUuid}}"
+              data-defence="dodge">Dodge
+      </button>
+      <button data-visible-actor-uuid="{{defendingActorUuid}}"
+              data-defence="ignore">Ignore
+      </button>
+    </div>
+  {{else if (eq attackState 'Defended')}}
+    {{{outcomeDescription}}}
+    {{#if true}} {{!-- TODO check that there is damage to roll, alse check if the defender should roll weapon damage instead --}}
+      <button data-visible-actor-uuid="{{attackingActorUuid}}" data-damage-hitlocation>
+        Roll some damage & hitlocation
+      </button>
+    {{/if}}
+
+  {{else if (eq attackState 'DamageRolled')}}
+    {{{outcomeDescription}}}
+    <div class="flexrow">
+      {{#if damagedHitLocationUuid}}
+      {{#unless actorDamagedApplied}}
+        <button data-visible-actor-uuid="{{damagedHitLocationUuid}}"
+                data-wounded-actor-uuid="{{damagedHitLocationUuid}}">Apply damage to actor
+        </button>
+      {{/unless}}
+      {{/if}}
+      {{#unless weaponDamageApplied}}
+        <button
+          data-visible-actor-uuid="{{defendingActorUuid}}" {{!-- TODO should be visible tho the actor owning the weapon--}}
+          data-damaged-weapon-uuid="{{damagedWeaponUuid}}">Apply damage to weapon
+        </button>{{/unless}}
+    </div>
+  {{/if}}
+
+  {{#if attackerFumbled}}
+    <button data-visible-actor-uuid="{{attackingActorUuid}}"
+            data-fumble="attacker">Roll Attacker Fumble
+    </button>
+  {{/if}}
+
+  {{#if defenderFumbled}}
+    <button data-visible-actor-uuid="{{defendingActorUuid}}"
+            data-fumble="defender">Roll Defender Fumble
+    </button>
+  {{/if}}
+
+  {{#if attackerFumbleOutcome}}
+    <b>Attacker Fumble:</b><br>
+    {{{attackerFumbleOutcome}}}
+  {{/if}}
+
+  {{#if defenderFumbleOutcome}}
+    <b>Defender Fumble:</b><br>
+    {{{defenderFumbleOutcome}}}
+  {{/if}}
+</div>
+

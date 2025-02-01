@@ -1,6 +1,6 @@
 import { Document } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/module.mjs";
 import { systemId } from "../../system/config";
-import { escapeRegex, getRequiredDomDataset } from "../../system/util";
+import { escapeRegex, getRequiredDomDataset, toKebabCase, trimChars } from "../../system/util";
 import { Rqid } from "../../system/api/rqidApi";
 import { templatePaths } from "../../system/loadHandlebarsTemplates";
 
@@ -11,6 +11,11 @@ export class RqidEditor extends FormApplication {
     this.document = document;
   }
 
+  get id() {
+    // @ts-expect-error uuid
+    return `${this.constructor.name}-${trimChars(toKebabCase(this.document.uuid ?? ""), "-")}`;
+  }
+
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: [systemId, "form", "rqid-editor"],
@@ -19,7 +24,6 @@ export class RqidEditor extends FormApplication {
       width: 650,
       left: 35,
       top: 15,
-      id: "rqid-editor-application",
       title: "Rqid Editor",
       closeOnSubmit: false,
       submitOnClose: true,

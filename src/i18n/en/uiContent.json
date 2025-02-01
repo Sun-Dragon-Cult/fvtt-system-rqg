@@ -15,7 +15,7 @@
       "sorceryMagic": "Sorcery Magic Spell",
       "spiritMagic": "Spirit Magic Spell",
       "weapon": "Weapon",
-      "Reputation": "Reputation"
+      "reputation": "Reputation"
     },
     "Actor": {
       "character": "Character"
@@ -200,18 +200,18 @@
         "Characteristic": "Characteristic",
         "format": "{name} ({abbr})",
         "strength": "STR",
-        "constitution": "CON",
-        "size": "SIZ",
-        "dexterity": "DEX",
-        "intelligence": "INT",
-        "power": "POW",
-        "charisma": "CHA",
         "strength-full": "Strength",
+        "constitution": "CON",
         "constitution-full": "Constitution",
+        "size": "SIZ",
         "size-full": "Size",
+        "dexterity": "DEX",
         "dexterity-full": "Dexterity",
+        "intelligence": "INT",
         "intelligence-full": "Intelligence",
+        "power": "POW",
         "power-full": "Power",
+        "charisma": "CHA",
         "charisma-full": "Charisma"
       },
       "Combat": {
@@ -438,6 +438,71 @@
       }
     },
     "Dialog": {
+      "Attack": {
+        "Title": "Attack",
+        "WeaponUsage": "Usage",
+        "ProneTarget": "Prone Target",
+        "UnawareTarget": "Unaware Target",
+        "Darkness": "Darkness",
+        "OtherModifier": "Other Modifier",
+        "DamageBonusFrom":"Damage Bonus from"
+      },
+      "Defence": {
+        "Title": "Defend",
+        "DefendingActor": "Defending Actor",
+        "Defence": "Defence",
+        "Parry": "Parry",
+        "ParryingWeaponUuid": "Parrying Weapon",
+        "ParryingWeaponUsage": "Usage",
+        "OtherModifier": "Other Modifier",
+        "Ignore": "Ignore",
+        "Ignored": "Ignored",
+        "SubsequentDefendModifier": "Subsequent Defence Modifier",
+        "SubsequentDefendOptions": {
+          "First": "First -0%",
+          "Second": "Second -20%",
+          "Third": "Third -40%",
+          "Fourth": "Fourth -60%",
+          "Fifth": "Fifth -80%",
+          "Sixth": "Sixth -100%"
+        }
+      },
+      "AbilityRoll": {
+        "Title": "Ability Check",
+        "Augment": "Augment",
+        "Meditate": "Meditate",
+        "OtherModifier": "Other Modifier"
+      },
+      "CharacteristicRoll": {
+        "Title": "Characteristic Check",
+        "Difficulty": "Difficulty",
+        "Augment": "Augment",
+        "Meditate": "Meditate",
+        "OtherModifier": "Other Modifier"
+      },
+      "SpiritMagicRoll": {
+        "Title": "Cast Spirit Magic",
+        "LevelUsed": "Level",
+        "Boost": "Boost",
+        "Augment": "Augment",
+        "Meditate": "Meditate",
+        "OtherModifier": "Other Modifier",
+        "SuccessfullyCastInfo": "Successfully cast a spirit magic spell, using {amount} magic points."
+      },
+      "RuneMagicRoll": {
+        "Title": "Cast Rune Magic",
+        "LevelUsed": "Level",
+        "RuneUsed": "Use Rune",
+        "Boost": "Boost",
+        "Augment": "Augment",
+        "MeditateRitual": "Meditate / Ritual",
+        "Ritual": "ritual",
+        "Meditate": "meditate",
+        "OtherModifier": "Other Modifier",
+        "NotEnoughRunePoints": "Not enough magic points left to cast this spell.",
+        "OneUseHeader": "One Use",
+        "OneUseDescription": "Casting this spell will reduce both your current and total Rune Points for the cult!"
+      },
       "BatchRqidEditor": {
         "Title": "Batch set System ID (Rqid)",
         "ExistingRqidsHeader": "Existing Rqids",
@@ -455,13 +520,44 @@
         "btnCancel": "Cancel",
         "btnConfirm": "Confirm",
         "OtherModifiers": "Other Modifiers",
-        "RollFormat": "Roll ({chance}%)",
-        "CantFindChatMessageError": "CantFindChatMessageError"
-      },
-      "characteristicChat": {
-        "ChatFlavor": "Characteristic: {name} ({value})",
-        "RollFlavor": "{difficulty} {name} Check",
-        "RollFlavorModifier": "<br/>With {modifier} other modifiers"
+        "CantFindChatMessageError": "CantFindChatMessageError",
+        "TargetChance": "Target Chance",
+        "IsAttacking": "{attackerName} is attacking {defenderName}",
+        "AugmentOptions": {
+          "None": "None",
+          "CriticalSuccess": "Critical Success +50%",
+          "SpecialSuccess": "Special Success +30%",
+          "Success": "Success +20%",
+          "Failure": "Failure -20%",
+          "Fumble": "Fumble -50%"
+        },
+        "MeditateOptions": {
+          "Title": "Meditation",
+          "None": "None",
+          "1mr": "1 MR +5%",
+          "2mr": "2 MR +10%",
+          "5mr": "5 MR (1 min) +15%",
+          "25mr": "25 MR (5 min) +20%",
+          "50mr": "50 MR (10 min) +25%"
+        },
+        "RitualOptions": {
+          "Title": "Ritual",
+          "30min": "Half an hour +30%",
+          "1h": "1 hour +35%",
+          "5h": "5 hours +40%",
+          "10h": "10 hours +45%",
+          "1d": "1 day +50%",
+          "2d": "2 days +55%",
+          "1week": "1 week +60%",
+          "2weeks": "2 weeks +65%",
+          "4weeks": "4 weeks +70%",
+          "1season": "1 season +75%",
+          "1year": "1 year +80%",
+          "2years": "2 years +85%",
+          "5years": "5 years +90%",
+          "10years": "10 years +95%",
+          "20years": "20 years +100%"
+        }
       },
       "confirmCopyIntangibleItem": {
         "title": "Really give {itemName} to {targetActor}?",
@@ -476,23 +572,6 @@
         "ReallyGiveItemSingle": "Really give {itemName} to {targetActor}?  It will be removed from {sourceActor}'s inventory.",
         "ReallyGiveItemQuantity": "Really give {itemName} to {targetActor}?  It will be removed from {sourceActor}'s inventory, or {sourceActor}'s inventory quantity will be reduced.",
         "GiveHowMany": "Give how many {itemName} to {targetActor}?  {sourceActor}'s inventory of this item will be reduced by the amount chosen, or the item will be deleted if you choose to give the maximum amount of {maxQty}."
-      },
-      "itemChat": {
-        "RollFlavor": "{name} Check",
-        "RollFlavorModifier": "<br/>With {modifier} other modifiers"
-      },
-      "reputationChat": {
-        "CheckReputationFlavor": "Check Reputation",
-        "Reputation": "Reputation"
-      },
-      "spiritMagicChat": {
-        "CantCastSpellAboveLearnedLevel": "Can't cast spell above learned level.",
-        "NotEnoughMagicPoints": "Not enough magic points left to cast this spell.",
-        "SuccessfullyCastInfo": "Successfully cast a spirit magic spell, using {amount} magic points.",
-        "ChatFlavor": "Spirit Magic: {name}",
-        "Cast": "Cast {spellName}",
-        "Level": "Level",
-        "Boost": "Boost"
       },
       "confirmItemDeleteDialog": {
         "title": "Delete {itemType}: {itemName}",
@@ -555,55 +634,6 @@
         "notifications": {
           "noExperience": "{actorName} does not have an experience check in {typeLocName} \"{name}\" and cannot gain from experience now."
         }
-      },
-      "runeMagicChat": {
-        "MissingJournalLinkTitle": "Edit the spell and add a description to have a journal link here!",
-        "CastUsingRune": "Cast using Rune",
-        "RuneHasExperienceTitle": "Has Experience Check",
-        "RunePointCost": "Rune Point Cost",
-        "OneUseWarning": "One Use!",
-        "OneUseWarningTip": "Casting this spell will reduce both your current and maximum Rune Points for the cult!",
-        "MagicPointBoost": "Magic Point Boost",
-        "MeditationOrRitual": "Meditation or Ritual",
-        "MeditationOrRitualValue0": "None",
-        "MeditationOrRitualValue5": "Meditate: 1 melee round, +5% bonus",
-        "MeditationOrRitualValue10": "Meditate: 2 melee rounds, +10% bonus",
-        "MeditationOrRitualValue15": "Meditate: 5 melee rounds (1 minute), +15% bonus",
-        "MeditationOrRitualValue20": "Meditate: 25 melee rounds (5 minutes), +20% bonus",
-        "MeditationOrRitualValue25": "Meditate: 50 melee rounds (10 minutes), +25% bonus",
-        "MeditationOrRitualValue30": "Ritual: Half an hour, +30% bonus",
-        "MeditationOrRitualValue35": "Ritual: 1 hour, +35% bonus",
-        "MeditationOrRitualValue40": "Ritual: 5 hours, +40% bonus",
-        "MeditationOrRitualValue45": "Ritual: 10 hours, +45% bonus",
-        "MeditationOrRitualValue50": "Ritual: 1 day, +50% bonus",
-        "MeditationOrRitualValue55": "Ritual: 2 days, +55% bonus",
-        "MeditationOrRitualValue60": "Ritual: 1 week, +60% bonus",
-        "MeditationOrRitualValue65": "Ritual: 2 weeks, +65% bonus",
-        "MeditationOrRitualValue70": "Ritual: 4 weeks, +70% bonus",
-        "MeditationOrRitualValue75": "Ritual: 1 season, +75% bonus",
-        "MeditationOrRitualValue80": "Ritual: 1 year, +80% bonus",
-        "MeditationOrRitualValue85": "Ritual: 2 years, +85% bonus",
-        "MeditationOrRitualValue90": "Ritual: 5 years, +90% bonus",
-        "MeditationOrRitualValue95": "Ritual: 10 years, +95% bonus",
-        "MeditationOrRitualValue100": "Ritual: 20 years, +100% bonus",
-        "SkillAugmentation": "Skill Augmentation",
-        "SkillAugmentationValue0": "None",
-        "SkillAugmentationValue50": "Critical Success, +50%",
-        "SkillAugmentationValue30": "Special Success, +30%",
-        "SkillAugmentationValue20": "Success, +20%",
-        "SkillAugmentationValue-20": "Failure, -20%",
-        "SkillAugmentationValue-50": "Fumble, -50%",
-        "noSelectedRuneWarning": "Attempt to roll a Rune Magic Spell with no Rune selected on the chat message.",
-        "resultMessageCritical": "The spell takes effect and costs no Rune Points and {magicPointBoost} Magic Points from boosting.",
-        "resultMessageSpecial": "The spell takes effect and costs {runePointCost} Rune Points and {magicPointBoost} Magic Points from boosting.",
-        "resultMessageSuccess": "The spell takes effect and costs {runePointCost} Rune Points and {magicPointBoost} Magic Points from boosting.",
-        "resultMessageFailure": "The spell fails to take effect but no Rune Points are lost.  If boosted with Magic Points, one is lost.",
-        "resultMessageFumble": "The spell fails to take effect and {runePointCost} Rune Points are lost.  If boosted with Magic Points, one is lost.",
-        "SpentOneUseRunePoints": "{actorName} spent {runePoints} One Use Rune Points from the {cultName} cult!",
-        "validationNotEnoughRunePoints": "Not enough rune points left!",
-        "validationNotEnoughMagicPoints": "Not enough magic points left to boost that much!",
-        "runeMagicResultFlavor": "Rune Magic: {name}",
-        "Cast": "Cast {spellName}"
       },
       "requestSkillSpecialization": {
         "title": "Decide skill specialization",
@@ -762,6 +792,7 @@
           "severed": "Severed"
         },
         "Notification": {
+          "CantFindItem": "Couldn't find an item during location changes",
           "CantFindHitLocation": "Couldn't find hitlocation with itemId [{hitLocationItemId}] on actor ${actorName} to show add wound dialog.",
           "HitLocationDoesNotHaveCalculatedArmor": "Hit location {hitLocationName} doesn't have a calculated total armor point",
           "NoValueOnHitLocation": "No value on hit location ${hitLocationName}",
@@ -905,10 +936,14 @@
         "Points": "Points",
         "Range": "Range",
         "Duration": "Duration",
-        "StackableQ": "Stackable?",
-        "OneUseQ": "One Use?",
+        "Stackable": "Stackable",
+        "OneUse": "One Use",
         "GrantedByCult": "Granted by Cult",
         "Runes": "Runes",
+        "CastingCostInfo": "{actorName} used {runePointAmount} rune points, and {magicPointAmount} magic points by casting a rune magic spell.",
+        "SpentOneUseRunePoints": "{actorName} spent {runePoints} One Use Rune Points from the {cultName} cult!",
+        "validationNotEnoughRunePoints": "Not enough rune points left!",
+        "validationNotEnoughMagicPoints": "Not enough magic points left to boost that much!",
         "runeMagicCultDialog": {
           "title": "Which cult provides this Rune Magic?",
           "btnAddRuneMagic": "Add Rune Magic",
@@ -958,8 +993,8 @@
         "SkillCategory": {}
       },
       "Spell": {
-        "RitualQ": "Ritual?",
-        "EnchantmentQ": "Enchantment?",
+        "Ritual": "Ritual",
+        "Enchantment": "Enchantment",
         "DurationEnum": {
           "undefined": "None",
           "instant": "Instant",
@@ -984,14 +1019,16 @@
       "SpiritMagic": {
         "Name": "Name",
         "Points": "Points",
-        "VariableQ": "Variable?",
+        "Variable": "Variable",
         "Range": "Range",
         "Duration": "Duration",
         "Concentration": "Concentration",
         "SpellFocus": "Spell Focus",
         "MatrixIndicator": "(held in matrix)",
-        "MatrixQ": "Held in Matrix?",
-        "LinkedToCompendium": "Linked to compendium [{compendium}] Journal Entry [{journalName}]"
+        "MatrixQ": "Held in Matrix",
+        "LinkedToCompendium": "Linked to compendium [{compendium}] Journal Entry [{journalName}]",
+        "CantCastSpellAboveLearnedLevel": "Can't cast spell above learned level.",
+        "NotEnoughMagicPoints": "Not enough magic points left to cast this spell."
       },
       "Weapon": {
         "Name": "Name",
@@ -1044,6 +1081,43 @@
         }
       }
     },
+    "Roll": {
+      "AbilityRoll": {
+        "Base": "base",
+        "Augment": "augment",
+        "Meditate": "meditate",
+        "SubsequentDefendRoll": {
+          "First": "first defence",
+          "Second": "second defence",
+          "Third": "third defence",
+          "Fourth": "fourth defence",
+          "Fifth": "fifth defence",
+          "Sixth": "sixth defence"
+        },
+        "ProneTarget": "prone",
+        "UnawareTarget": "unaware",
+        "Darkness": "darkness",
+        "OtherModifier": "other modifier"
+      },
+      "CharacteristicRoll": {
+        "Augment": "augment",
+        "Meditate": "meditate",
+        "Other": "other"
+      },
+      "SpiritMagicRoll": {
+        "Augment": "augment",
+        "Meditate": "meditate",
+        "Base": "POW*5",
+        "MagicPointCost": "Used {cost} magic points"
+      },
+      "RuneMagicRoll": {
+        "Augment": "augment",
+        "Meditate": "meditate",
+        "Ritual": "ritual",
+        "UsageCost": "Used {runePointsCost} rune points and {magicPointCost} magic points.",
+        "OneUseUsageCost": "Used {runePointsCost} permanent rune points and {magicPointCost} magic points."
+      }
+    },
     "Hotbar": {
       "MacroName": {
         "ToChat": "Use {name}",
@@ -1090,7 +1164,7 @@
     "Game": {
       "MeleeRoundAbbr": "MR",
       "SrMeleeRoundAbbr": "S/MR",
-      "ResultEnum": {
+      "AbilityResultEnum": {
         "0": "Hyper Critical",
         "1": "Special Critical",
         "2": "Critical",
@@ -1099,10 +1173,11 @@
         "5": "Failure",
         "6": "Fumble"
       },
-      "RollChat": "Roll via Chat (click)",
-      "RollQuick": "Quick Roll (dbl click)",
-      "RollCharacteristicQuick": "Quick Roll *5 (dbl click)",
-      "RollTitle": "Roll via Chat (click), Quick Roll (dbl click)",
+      "Roll": "Roll",
+      "RollChat": "Roll (click)",
+      "RollQuick": "Direct Roll (dbl click)",
+      "RollCharacteristicQuick": "Direct Roll *5 (dbl click)",
+      "RollTitle": "Roll via Dialog (click), Direct Roll (dbl click)",
       "WeaponUsage": {
         "oneHand": "1H",
         "offHand": "offH",
@@ -1113,13 +1188,68 @@
         "twoHand-full": "Two-handed",
         "missile-full": "Missile"
       },
-      "RollDifficulty": {
-        "0": "Nearly Impossible (*0.5)",
-        "1": "Very Hard (*1)",
-        "2": "Hard (*2)",
-        "3": "Moderate (*3)",
-        "4": "Easy (*4)",
-        "5": "Simple Action (*5)"
+      "RollDifficultyLevel": {
+        "0": "nearly impossible",
+        "1": "very hard",
+        "2": "hard",
+        "3": "moderate",
+        "4": "easy",
+        "5": "simple action",
+        "6": "very simple action"
+      },
+      "AttackParryResults": {
+        "2-2": "<b>Attacker</b> rolls normal damage.<br><b>Defender’s</b> parrying weapon takes 1 HP damage if rolled damage is greater than its current HP. Any excess damage goes to affected hit location.",
+        "2-3": "<b>Attacker</b> inflicts max special damage.<br><b>Defender’s</b> parrying weapon takes 1 HP damage if rolled damage is greater than its current HP. Any excess damage goes to adjacent hit location, with no armor protection.",
+        "2-4": "<b>Attacker</b> inflicts max special damage.<br><b>Defender’s</b> parrying weapon HP reduced by the damage rolled. Any excess damage goes to adjacent hit location, with no armor protection.",
+        "2-5": "<b>Attacker</b> inflicts max special damage.<br><b>Defender</b> takes damage, with no armor protection.",
+        "2-6": "<b>Attacker</b> automatically hits, does maximum special damage.<br><b>Defender</b> takes damage, with no armor protection, and rolls on Fumbles table.",
+        "3-2": "<b>Attack</b> parried or deflected.<br><b>Defender</b> rolls parrying weapon’s normal damage. Attacking weapon’s HP is reduced by 1 HP if damage over its current HP.",
+        "3-3": "<b>Attacker</b> rolls normal damage.<br><b>Defender’s</b> parrying weapon takes 1HP damage if damage more than its current HP. Any excess damage goes to the affected hit location.",
+        "3-4": "<b>Attacker</b> rolls special damage.<br><b>Defender’s</b> parrying weapon takes damage over its HP, with same amount of damage going to adjacent hit location.",
+        "3-5": "<b>Attacker</b> rolls special damage.<br><b>Defender</b> takes damage.",
+        "3-6": "<b>Attacker</b> causes special damage.<br><b>Defender</b> takes damage and rolls on Fumbles table.",
+        "4-2": "<b>Attack</b> parried or deflected.<br><b>Defender</b> rolls parrying weapon’s special damage. Attacking weapon’s HP is reduced by any damage over its current HP.",
+        "4-3": "<b>Attack</b> parried or deflected.<br><b>Defender</b> rolls parrying weapon’s normal damage. Attacking weapon’s HP is reduced by 1 HP if damage over its current HP.",
+        "4-4": "<b>Attacker</b> rolls normal damage.<br><b>Defender’s</b> parrying weapon takes 1 HP damage if damage more than its current HP. Any excess damage goes to the affected hit location.",
+        "4-5": "<b>Attacker</b> rolls normal damage.<br><b>Defender</b> takes damage.",
+        "4-6": "<b>Attacker</b> rolls normal damage.<br><b>Defender</b> takes damage and rolls on Fumbles table.",
+        "5-2": "<b>Attack</b> parried or deflected.<br><b>Defender</b> rolls parrying weapon’s special damage. Attacking weapon’s HP reduced by the damage rolled.",
+        "5-3": "<b>Attacker</b> parried or deflected.<br><b>Defender</b> rolls parrying weapon’s special damage. Attacking weapon’s HP reduced by any damage over its current HP.",
+        "5-4": "<b>Attacker</b> parried or deflected.<br><b>Defender</b> rolls parrying weapon’s normal damage. Attacking weapon’s HP reduced by 1 HP if damage over its current HP.",
+        "5-5": "<b>Attacker</b> misses.<br><b>Defender</b> misses.",
+        "5-6": "<b>Attacker</b> rolls normal damage.<br><b>Defender</b> takes damage and rolls on Fumbles table.",
+        "6-2": "<b>Attacker</b> rolls on Fumbles table.<br><b>Defender</b> rolls parrying weapon’s special damage. Attacking weapon’s HP reduced by the damage rolled.",
+        "6-3": "<b>Attacker</b> rolls on Fumbles table.<br><b>Defender</b> rolls parrying weapon’s special damage. Attacking weapon’s HP reduced by the damage over its current HP.",
+        "6-4": "<b>Attacker</b> rolls on Fumbles table.<br><b>Defender</b> rolls parrying weapon’s normal damage. Attacking weapon’s HP reduced by 1 HP if damage over its current HP.",
+        "6-5": "<b>Attacker</b> rolls on Fumbles table.<br><b>Defender</b> misses.",
+        "6-6": "<b>Attacker</b> rolls on Fumbles table.<br><b>Defender</b> rolls on Fumbles table."
+      },
+      "DodgeResults": {
+        "2-2": "<b>Attack</b> is dodged successfully.",
+        "2-3": "<b>Attack</b> does special success damage.",
+        "2-4": "<b>Attack</b> does special success damage, ignores armor.",
+        "2-5": "<b>Attack</b> does maximum special success damage, ignores armor.",
+        "2-6": "<b>Attack</b> does maximum special success damage, ignores armor.<br><b>Defender</b> rolls on Fumbles table.",
+        "3-2": "<b>Attack</b> is dodged successfully.",
+        "3-3": "<b>Attack</b> is dodged successfully.",
+        "3-4": "<b>Attack</b> does special success damage.",
+        "3-5": "<b>Attack</b> does special success damage.",
+        "3-6": "<b>Attack</b> does special success damage.<br><b>Defender</b> rolls on Fumbles table.",
+        "4-2": "<b>Attack</b> is dodged.",
+        "4-3": "<b>Attack</b> is dodged.",
+        "4-4": "<b>Attack</b> is dodged.",
+        "4-5": "<b>Attack</b> does normal damage.",
+        "4-6": "<b>Attack</b> does normal damage.<br><b>Defender</b> rolls on Fumbles table.",
+        "5-2": "<b>Attack</b> misses.",
+        "5-3": "<b>Attack</b> misses.",
+        "5-4": "<b>Attack</b> misses.",
+        "5-5": "<b>Attack</b> misses.",
+        "5-6": "<b>Attack</b> does normal damage.<br><b>Defender</b> rolls on Fumbles table.",
+        "6-2": "<b>Attacker</b> rolls on Fumbles table.",
+        "6-3": "<b>Attacker</b> rolls on Fumbles table.",
+        "6-4": "<b>Attacker</b> rolls on Fumbles table.",
+        "6-5": "<b>Attacker</b> rolls on Fumbles table.",
+        "6-6": "<b>Attack</b> fails and <b>Attacker</b> rolls on Fumbles table.<br><b>Defender</b> roll on Fumbles table."
       }
     },
     "RQGSystem": {

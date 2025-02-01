@@ -5,7 +5,7 @@ import { RqidLink } from "../shared/rqidLink";
 export interface RuneMagicDataSourceData extends Spell {
   /** The cult this rune magic is learned from and where to draw rune points */
   cultId: string;
-  /** Array of runes that can be used with this spell" */
+  /** Array of runes that can be used with this spell */
   runeRqidLinks: RqidLink[]; //
   /** Can the caster decide the number of rune points used */
   isStackable: boolean;

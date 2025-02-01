@@ -188,7 +188,8 @@ async function submitImproveAbilityDialog(
       const expRoll = new Roll("1d100" + maybeSkillCategoryMod);
       await expRoll.toMessage({
         speaker: speaker,
-        type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+        // @ts-expect-error CHAT_MESSAGE_STYLES
+        type: CONST.CHAT_MESSAGE_STYLES.ROLL,
         flavor: `<h3>${rollFlavor}</h3><p>${rollContent}</p>`,
       });
 
@@ -210,7 +211,8 @@ async function submitImproveAbilityDialog(
           const gainRoll = new Roll(String(adapter.experienceGainFixed));
           await gainRoll.toMessage({
             speaker: speaker,
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+            // @ts-expect-error CHAT_MESSAGE_STYLES
+            type: CONST.CHAT_MESSAGE_STYLES.ROLL,
             flavor: `<h3>${resultFlavor}</h3><p>${resultContentChoseFixed}</p>`,
           });
           gain = adapter.experienceGainFixed;
@@ -223,7 +225,8 @@ async function submitImproveAbilityDialog(
           const gainRoll = new Roll(adapter.experienceGainRandom);
           await gainRoll.toMessage({
             speaker: speaker,
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+            // @ts-expect-error CHAT_MESSAGE_STYLES
+            type: CONST.CHAT_MESSAGE_STYLES.ROLL,
             flavor: `<h3>${resultFlavor}</h3><p>${resultContentChoseRandom}</p>`,
           });
           gain = Number(gainRoll.total) || 0;
@@ -240,10 +243,11 @@ async function submitImproveAbilityDialog(
           { actorName: speaker.alias, name: adapter.name, typeLocName: adapter.typeLocName },
         );
         const failChat = {
-          type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+          speaker: speaker,
+          // @ts-expect-error CHAT_MESSAGE_STYLES
+          type: CONST.CHAT_MESSAGE_STYLES.OTHER,
           flavor: failedFlavor,
           content: failedContent,
-          speaker: speaker,
         };
         await ChatMessage.create(failChat);
       }
@@ -268,7 +272,8 @@ async function submitImproveAbilityDialog(
     const roll = new Roll(String(adapter.trainingGainFixed));
     await roll.toMessage({
       speaker: speaker,
-      type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+      // @ts-expect-error CHAT_MESSAGE_STYLES
+      type: CONST.CHAT_MESSAGE_STYLES.ROLL,
       flavor: `<h3>${flavor}</h3><p>${content}</p>`,
     });
     gain = adapter.trainingGainFixed;
@@ -285,7 +290,8 @@ async function submitImproveAbilityDialog(
     const gainRoll = new Roll(adapter.trainingGainRandom);
     await gainRoll.toMessage({
       speaker: speaker,
-      type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+      // @ts-expect-error CHAT_MESSAGE_STYLES
+      type: CONST.CHAT_MESSAGE_STYLES.ROLL,
       flavor: `<h3>${flavor}</h3><p>${content}</p>`,
     });
     gain = Number(gainRoll.total) || 0;

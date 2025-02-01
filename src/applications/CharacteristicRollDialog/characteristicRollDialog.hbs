@@ -1,0 +1,35 @@
+<form>
+  <header class="roll-header">
+    <h1>{{characteristicName}}</h1>
+    <div class="sub-header">{{characteristicValue}}</div>
+  </header>
+  <div class="key-value-grid p-0 mb-1-5rem">
+    <label>{{localize "RQG.Dialog.CharacteristicRoll.Difficulty"}}</label>
+    <select name="difficulty">
+      {{selectOptions difficultyOptions selected=object.difficulty localize=false}}
+    </select>
+
+    <label>{{localize "RQG.Dialog.CharacteristicRoll.Augment"}}</label>
+    <select name="augmentModifier">
+      {{selectOptions augmentOptions selected=object.augmentModifier localize=true}}
+    </select>
+
+    <label>{{localize "RQG.Dialog.CharacteristicRoll.Meditate"}}</label>
+    <select name="meditateModifier">
+      {{selectOptions meditateOptions selected=object.meditateModifier localize=true}}
+    </select>
+
+    <input type="text" style="text-align:end;font-weight:bold;" value="{{object.otherModifierDescription}}" name="otherModifierDescription">
+    <div>
+      <input type="number" value="{{object.otherModifier}}" name="otherModifier"> %
+    </div>
+  </div>
+
+  <div class="flexrow flex-wrap gap03rem">
+    <div class="target-box" data-tooltip="{{localize "RQG.Dialog.Common.TargetChance"}}">
+      <i class="fa-solid fa-bullseye"></i><br>
+      {{totalChance}}%
+    </div>
+    <button data-characteristic-roll>{{localize "RQG.Game.Roll"}}</button>
+  </div>
+</form>

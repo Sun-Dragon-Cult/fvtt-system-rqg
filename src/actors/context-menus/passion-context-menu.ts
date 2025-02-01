@@ -22,7 +22,7 @@ export const passionMenuOptions = (
     callback: async (el: JQuery) => {
       const itemId = getRequiredDomDataset(el, "item-id");
       const item = actor.items.get(itemId);
-      await item?.toChat();
+      await item?.abilityRoll();
     },
   },
   {
@@ -41,7 +41,7 @@ export const passionMenuOptions = (
         ui.notifications?.error(msg);
         throw new RqgError(msg);
       }
-      await item?.abilityRoll();
+      await item?.abilityRollImmediate();
     },
   },
   {

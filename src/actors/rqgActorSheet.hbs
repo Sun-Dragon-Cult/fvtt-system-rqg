@@ -71,7 +71,7 @@
       <div class="characteristics">
         {{#each system.characteristics as | characteristic key |}}
           <div data-characteristic="{{key}}"
-               class="flex-column{{#if characteristic.hasExperience}} experienced{{/if}}  
+               class="flex-column{{#if characteristic.hasExperience}} experienced{{/if}}
                           {{#if @root.showCharacteristicRatings}}
                             {{lookup @root.characteristicRanks key}}
                           {{/if}}">
@@ -139,7 +139,7 @@
           {{else}}
             {{#if ../system.attributes.isCreature}}
               <span data-tooltip="{{localize "RQG.Actor.Attributes.CreatureExplanation"}}">
-                {{localize "RQG.Actor.Attributes.Creature"}}                
+                {{localize "RQG.Actor.Attributes.Creature"}}
               </span>
             {{/if}}
           {{/edit-mode}}
@@ -231,6 +231,7 @@
             </div>
           </div>
         </fieldset>
+
         {{#if showHeropoints}}{{#if isPC}}
           <div class="hero-points-container">
             <div class="norse">{{localize "RQG.Actor.Attributes.HeroPoints"}}</div>

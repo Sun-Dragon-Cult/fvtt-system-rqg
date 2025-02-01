@@ -1,6 +1,7 @@
 import { ChatSpeakerDataProperties } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/chatSpeakerData";
-import { activateChatTab, getGame, localize } from "../../system/util";
+import { getGame, localize } from "../../system/util";
 import { systemId } from "../../system/config";
+import { AbilitySuccessLevelEnum } from "../../rolls/AbilityRoll/AbilityRoll.defs";
 
 export interface IAbility {
   /** The effective % chance of this ability with all modifiers added in */
@@ -12,18 +13,8 @@ export interface IAbility {
 }
 // mod?: string; // Modification, roll modifier formula compatible 0.7.x feature? Let it be a separate interface
 
-export enum ResultEnum {
-  HyperCritical,
-  SpecialCritical,
-  Critical,
-  Special,
-  Success,
-  Failure,
-  Fumble,
-}
-
 export class ResultMessage {
-  result!: ResultEnum;
+  result!: AbilitySuccessLevelEnum;
   html!: string;
 }
 
@@ -38,7 +29,7 @@ export class Ability {
     chanceMod: number, // TODO supply full EffectModifier so it's possible to show "Broadsword (Bladesharp +10%, Darkness -70%) Fumble"
     speaker: ChatSpeakerDataProperties,
     resultMessages?: ResultMessage[],
-  ): Promise<ResultEnum> {
+  ): Promise<AbilitySuccessLevelEnum> {
     const r = new Roll("1d100");
     await r.evaluate({ async: true });
     const modifiedChance: number = chance + chanceMod;
@@ -50,13 +41,13 @@ export class Ability {
     }
     const sign = chanceMod > 0 ? "+" : "";
     const chanceModText = chanceMod ? `${sign}${chanceMod}` : "";
-    const resultText = localize(`RQG.Game.ResultEnum.${result}`);
+    const resultText = localize(`RQG.Game.AbilityResultEnum.${result}`);
     await r.toMessage({
       flavor: `${flavor} (${chance}${chanceModText}%) <h1>${resultText}</h1><div>${resultMsgHtml}</div>`,
       speaker: speaker,
-      type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+      // @ts-expect-error CHAT_MESSAGE_STYLES
+      type: CONST.CHAT_MESSAGE_STYLES.ROLL,
     });
-    activateChatTab();
     return result;
   }
 
@@ -64,7 +55,7 @@ export class Ability {
     chance: number,
     roll: number,
     useSpecialCriticals: boolean,
-  ): ResultEnum {
+  ): AbilitySuccessLevelEnum {
     chance = Math.max(0, chance); // -50% = 0%
 
     const hyperCritical = useSpecialCriticals && chance >= 100 ? Math.ceil(chance / 500) : 0;
@@ -77,13 +68,13 @@ export class Ability {
     const success = Math.min(95, Math.max(chance, 5));
     const fail = fumble === 96 ? 95 : Math.max(96, fumble - 1);
     const lookup = [
-      { limit: hyperCritical, result: ResultEnum.HyperCritical },
-      { limit: specialCritical, result: ResultEnum.SpecialCritical },
-      { limit: critical, result: ResultEnum.Critical },
-      { limit: special, result: ResultEnum.Special },
-      { limit: success, result: ResultEnum.Success },
-      { limit: fail, result: ResultEnum.Failure },
-      { limit: Infinity, result: ResultEnum.Fumble },
+      { limit: hyperCritical, result: AbilitySuccessLevelEnum.HyperCritical },
+      { limit: specialCritical, result: AbilitySuccessLevelEnum.SpecialCritical },
+      { limit: critical, result: AbilitySuccessLevelEnum.Critical },
+      { limit: special, result: AbilitySuccessLevelEnum.Special },
+      { limit: success, result: AbilitySuccessLevelEnum.Success },
+      { limit: fail, result: AbilitySuccessLevelEnum.Failure },
+      { limit: Infinity, result: AbilitySuccessLevelEnum.Fumble },
     ];
     return lookup.filter((v) => roll <= v.limit)[0].result;
   }

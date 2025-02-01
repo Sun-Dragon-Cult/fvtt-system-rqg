@@ -19,14 +19,20 @@ export const templatePaths = {
   itemSkillSheet: "systems/rqg/items/skill-item/skillSheet.hbs",
   itemSpiritMagicSheet: "systems/rqg/items/spirit-magic-item/spiritMagicSheet.hbs",
 
+  // Dice & Rolls
+  abilityRollTooltip: "systems/rqg/rolls/AbilityRoll/abilityRollTooltip.hbs",
+  abilityRoll: "systems/rqg/rolls/AbilityRoll/abilityRoll.hbs",
+  characteristicRollTooltip: "systems/rqg/rolls/CharacteristicRoll/characteristicRollTooltip.hbs",
+  characteristicRoll: "systems/rqg/rolls/CharacteristicRoll/characteristicRoll.hbs",
+  spiritMagicRollTooltip: "systems/rqg/rolls/SpiritMagicRoll/spiritMagicRollTooltip.hbs",
+  spiritMagicRoll: "systems/rqg/rolls/SpiritMagicRoll/spiritMagicRoll.hbs",
+  runeMagicRollTooltip: "systems/rqg/rolls/RuneMagicRoll/runeMagicRollTooltip.hbs",
+  runeMagicRoll: "systems/rqg/rolls/RuneMagicRoll/runeMagicRoll.hbs",
+
   // Chat
-  chatCharacteristicHandler:
-    "systems/rqg/chat/characteristicChatHandler/characteristicChatHandler.hbs",
-  chatItemHandler: "systems/rqg/chat/itemChatHandler.hbs",
+  chatMessage: "systems/rqg/chat/chat-message.hbs",
   chatWeaponHandler: "systems/rqg/chat/weaponChatHandler.hbs",
-  reputationChatHandler: "systems/rqg/chat/reputationChatHandler.hbs",
-  chatSpiritMagicHandler: "systems/rqg/chat/spiritMagicChatHandler.hbs",
-  runeMagicChatHandler: "systems/rqg/chat/runeMagicChatHandler.hbs",
+  attackChatMessage: "systems/rqg/applications/AttackFlow/attackChatTemplate.hbs",
 
   rqidTooltip: "systems/rqg/documents/rqid-tooltip.hbs",
 
@@ -43,6 +49,13 @@ export const templatePaths = {
   confirmTransferPhysicalItem: "systems/rqg/applications/confirmTransferPhysicalItem.hbs",
   hitLocationAddWound: "systems/rqg/items/hit-location-item/hitLocationAddWound.hbs",
   hitLocationHealWound: "systems/rqg/items/hit-location-item/hitLocationHealWound.hbs",
+  abilityRollDialog: "systems/rqg/applications/abilityRollDialog/abilityRollDialog.hbs",
+  characteristicRollDialog:
+    "systems/rqg/applications/CharacteristicRollDialog/characteristicRollDialog.hbs",
+  spiritMagicRollDialog: "systems/rqg/applications/SpiritMagicRollDialog/spiritMagicRollDialog.hbs",
+  runeMagicRollDialog: "systems/rqg/applications/RuneMagicRollDialog/runeMagicRollDialog.hbs",
+  attackDialog: "systems/rqg/applications/AttackFlow/attackDialog.hbs",
+  defenceDialog: "systems/rqg/applications/AttackFlow/defenceDialog.hbs",
 
   // Settings
   defaultItemIconSettings: "./systems/rqg/applications/defaultItemIconSettings.hbs",

@@ -1,4 +1,3 @@
-import { CharacteristicChatHandler } from "../../chat/characteristicChatHandler/characteristicChatHandler";
 import { RqgActor } from "../rqgActor";
 import { Characteristic, Characteristics } from "../../data-model/actor-data/characteristics";
 import {
@@ -21,15 +20,8 @@ export const characteristicMenuOptions = (
     icon: contextMenuRunes.RollViaChat,
     condition: () => true,
     callback: async (el: JQuery) => {
-      const { name: characteristicName, value: characteristic } = getCharacteristic(actor, el);
-      await CharacteristicChatHandler.show(
-        {
-          name: characteristicName,
-          data: characteristic,
-        },
-        actor,
-        token,
-      );
+      const { name: characteristicName } = getCharacteristic(actor, el);
+      await actor.characteristicRoll(characteristicName);
     },
   },
   {
@@ -37,15 +29,8 @@ export const characteristicMenuOptions = (
     icon: contextMenuRunes.RollQuick,
     condition: () => true,
     callback: async (el: JQuery): Promise<void> => {
-      const { name: characteristicName, value: characteristic } = getCharacteristic(actor, el);
-      await CharacteristicChatHandler.roll(
-        characteristicName,
-        characteristic.value,
-        5,
-        0,
-        actor,
-        ChatMessage.getSpeaker({ actor: actor, token: token }),
-      );
+      const { name: characteristicName } = getCharacteristic(actor, el);
+      await actor.characteristicRollImmediate(characteristicName);
     },
   },
   {
@@ -180,9 +165,9 @@ export async function initializeCharacteristic(
 
   const char = actor.system.characteristics[characteristic as keyof Characteristics];
 
-  let formula = char.formula;
+  let formula = char?.formula;
 
-  if (char == null || char.formula == null || char.formula === "" || !Roll.validate(char.formula)) {
+  if (formula == null || !Roll.validate(formula)) {
     formula = undefined;
   }
 
@@ -280,12 +265,15 @@ export async function setAllCharacteristicsToAverage(actor: RqgActor): Promise<v
   await initializeCurrentDerivedAttributes(actor);
 }
 
-function getCharacteristic(actor: RqgActor, el: JQuery): { name: string; value: Characteristic } {
+function getCharacteristic(
+  actor: RqgActor,
+  el: JQuery,
+): { name: keyof Characteristics; value: Characteristic } {
   const characteristicName = getDomDataset(el, "characteristic");
   const actorCharacteristics: Characteristics = actor.system.characteristics;
   if (characteristicName && characteristicName in actorCharacteristics) {
     return {
-      name: characteristicName,
+      name: characteristicName as keyof Characteristics,
       value: actorCharacteristics[characteristicName as keyof typeof actorCharacteristics],
     };
   } else {

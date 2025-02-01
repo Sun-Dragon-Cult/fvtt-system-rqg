@@ -14,5 +14,5 @@ export const defaultItemIconsObject: IconSettingsData = {
   [ItemTypeEnum.Skill]: "systems/rqg/assets/images/items/skill.svg",
   [ItemTypeEnum.SpiritMagic]: "systems/rqg/assets/images/items/spirit-magic.svg",
   [ItemTypeEnum.Weapon]: "systems/rqg/assets/images/items/weapon.svg",
-  Reputation: "systems/rqg/assets/images/other/reputation.svg",
+  reputation: "systems/rqg/assets/images/other/reputation.svg",
 };

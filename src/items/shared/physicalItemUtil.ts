@@ -83,7 +83,7 @@ function getChangedLocationRelatedChanges(
   const updatedItem = actorEmbeddedItems.find((i) => i.id === physicalItem.id);
 
   if (!updatedItem) {
-    const msg = localize("RQG.Item.Notification.CantFindItem"); // TODO *** Fix translation
+    const msg = localize("RQG.Item.Notification.CantFindItem");
     ui.notifications?.error(msg);
     throw new RqgError(msg, actorEmbeddedItems);
   }

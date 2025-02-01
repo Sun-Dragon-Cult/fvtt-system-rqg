@@ -40,7 +40,7 @@ export interface WeaponDataSourceData extends IPhysicalItem {
   };
   defaultUsage: UsageType | undefined; // Used to remember how the actor used it lastly
   hitPoints: Resource;
-  /** E.g. arm or --- instead of a number */
+  /** E.g. arm or --- instead of a number TODO Switch to hitLocation rqidLink */
   hitPointLocation: string;
   description: string;
   /** E.g. Fist, Grapple, Spit */

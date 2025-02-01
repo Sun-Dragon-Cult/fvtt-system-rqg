@@ -17,7 +17,6 @@ import {
   PhysicalItemType,
 } from "../data-model/item-data/IPhysicalItem";
 import { characteristicMenuOptions } from "./context-menus/characteristic-context-menu";
-import { CharacteristicChatHandler } from "../chat/characteristicChatHandler/characteristicChatHandler";
 import {
   assertHtmlElement,
   assertItemType,
@@ -40,7 +39,6 @@ import { RuneDataSource, RuneTypeEnum } from "../data-model/item-data/runeData";
 import { DamageCalculations } from "../system/damageCalculations";
 import { actorHealthStatuses, LocomotionEnum } from "../data-model/actor-data/attributes";
 import { ActorTypeEnum } from "../data-model/actor-data/rqgActorData";
-import { ReputationChatHandler } from "../chat/reputationChatHandler";
 import { ActorWizard } from "../applications/actorWizardApplication";
 import { systemId } from "../system/config";
 import { RqidLink } from "../data-model/shared/rqidLink";
@@ -218,7 +216,7 @@ export class RqgActorSheet extends ActorSheet<
       activeInSR: [...this.activeInSR],
 
       characteristicRanks: await this.rankCharacteristics(),
-      bodyType: this.getBodyType(),
+      bodyType: this.actor.getBodyType(),
       hitLocationDiceRangeError: this.getHitLocationDiceRangeError(),
 
       // UI toggles
@@ -486,22 +484,6 @@ export class RqgActorSheet extends ActorSheet<
         return acc;
       }, [])
       .sort((a: any, b: any) => b.chance - a.chance);
-  }
-
-  private getBodyType(): string {
-    const actorHitlocationRqids = this.actor.items
-      .filter((i) => i.type === ItemTypeEnum.HitLocation)
-      .map((hl) => hl.flags?.rqg?.documentRqidFlags?.id ?? "");
-    if (
-      CONFIG.RQG.bodytypes.humanoid.length === actorHitlocationRqids.length &&
-      CONFIG.RQG.bodytypes.humanoid.every((hitLocationRqid) =>
-        actorHitlocationRqids.includes(hitLocationRqid),
-      )
-    ) {
-      return "humanoid";
-    } else {
-      return "other";
-    }
   }
 
   /**
@@ -865,7 +847,8 @@ export class RqgActorSheet extends ActorSheet<
           speaker: speaker,
           content: message,
           whisper: usersIdsThatOwnActor(this.actor),
-          type: CONST.CHAT_MESSAGE_TYPES.WHISPER,
+          // @ts-expect-error CHAT_MESSAGE_STYLES
+          type: CONST.CHAT_MESSAGE_STYLES.WHISPER,
         });
       }
     }
@@ -932,7 +915,9 @@ export class RqgActorSheet extends ActorSheet<
     htmlElement.querySelectorAll<HTMLElement>("[data-characteristic-roll]").forEach((el) => {
       const closestDataCharacteristic = el.closest("[data-characteristic]");
       assertHtmlElement(closestDataCharacteristic);
-      const characteristicName = closestDataCharacteristic?.dataset.characteristic;
+      const characteristicName = closestDataCharacteristic?.dataset.characteristic as
+        | keyof typeof actorCharacteristics
+        | undefined;
 
       let clickCount = 0;
       const actorCharacteristics = this.actor.system.characteristics;
@@ -945,30 +930,13 @@ export class RqgActorSheet extends ActorSheet<
         clickCount = Math.max(clickCount, ev.detail);
 
         if (clickCount >= 2) {
-          await CharacteristicChatHandler.roll(
-            characteristicName,
-            actorCharacteristics[characteristicName as keyof typeof actorCharacteristics].value,
-            5,
-            0,
-            this.actor,
-            // @ts-expect-error this.token should be TokenDocument, but is typed as Token
-            ChatMessage.getSpeaker({ actor: this.actor, token: this.token }),
-          );
+          await this.actor.characteristicRollImmediate(characteristicName);
+
           clickCount = 0;
         } else if (clickCount === 1) {
           setTimeout(async () => {
             if (clickCount === 1) {
-              await CharacteristicChatHandler.show(
-                {
-                  name: characteristicName,
-                  data: actorCharacteristics[
-                    characteristicName as keyof typeof actorCharacteristics
-                  ],
-                },
-                this.actor,
-                // @ts-expect-error wait for foundry-vtt-types issue #1165 #1166
-                this.token,
-              );
+              await this.actor.characteristicRoll(characteristicName);
             }
             clickCount = 0;
           }, CONFIG.RQG.dblClickTimeout);
@@ -983,22 +951,12 @@ export class RqgActorSheet extends ActorSheet<
         clickCount = Math.max(clickCount, ev.detail);
 
         if (clickCount >= 2) {
-          // @ts-expect-error wait for foundry-vtt-types issue #1165 #1166
-          const speaker = ChatMessage.getSpeaker({ actor: this.actor, token: this.token });
-          await ReputationChatHandler.roll(
-            this.actor.system.background.reputation ?? 0,
-            0,
-            speaker,
-          );
+          await this.actor.reputationRollImmediate();
           clickCount = 0;
         } else if (clickCount === 1) {
           setTimeout(async () => {
             if (clickCount === 1) {
-              await ReputationChatHandler.show(
-                this.actor,
-                // @ts-expect-error wait for foundry-vtt-types issue #1165 #1166
-                this.token,
-              );
+              await this.actor.reputationRoll();
             }
             clickCount = 0;
           }, CONFIG.RQG.dblClickTimeout);
@@ -1031,12 +989,12 @@ export class RqgActorSheet extends ActorSheet<
 
         clickCount = Math.max(clickCount, ev.detail);
         if (clickCount >= 2) {
-          await item.abilityRoll();
+          await item.abilityRollImmediate();
           clickCount = 0;
         } else if (clickCount === 1) {
           setTimeout(async () => {
             if (clickCount === 1) {
-              await item.toChat();
+              await item.abilityRoll();
             }
             clickCount = 0;
           }, CONFIG.RQG.dblClickTimeout);
@@ -1056,19 +1014,16 @@ export class RqgActorSheet extends ActorSheet<
         clickCount = Math.max(clickCount, ev.detail);
         if (clickCount >= 2) {
           if (runeMagicItem.system.points > 1) {
-            await runeMagicItem.toChat();
+            await runeMagicItem?.runeMagicRoll();
           } else {
-            await runeMagicItem.abilityRoll({
-              runePointCost: 1,
-              magicPointBoost: 0,
-            });
+            await runeMagicItem?.runeMagicRollImmediate();
           }
 
           clickCount = 0;
         } else if (clickCount === 1) {
           setTimeout(async () => {
             if (clickCount === 1) {
-              await runeMagicItem.toChat();
+              await runeMagicItem?.runeMagicRoll();
             }
             clickCount = 0;
           }, CONFIG.RQG.dblClickTimeout);
@@ -1096,16 +1051,16 @@ export class RqgActorSheet extends ActorSheet<
         clickCount = Math.max(clickCount, ev.detail);
         if (clickCount >= 2) {
           if (item.system.isVariable && item.system.points > 1) {
-            await item.toChat();
+            await item.spiritMagicRoll();
           } else {
-            await item.abilityRoll({ level: item.system.points, boost: 0 });
+            await item.spiritMagicRollImmediate();
           }
 
           clickCount = 0;
         } else if (clickCount === 1) {
           setTimeout(async () => {
             if (clickCount === 1) {
-              await item.toChat();
+              await item.spiritMagicRoll();
             }
             clickCount = 0;
           }, CONFIG.RQG.dblClickTimeout);
@@ -1128,12 +1083,12 @@ export class RqgActorSheet extends ActorSheet<
         clickCount = Math.max(clickCount, ev.detail);
         if (clickCount >= 2) {
           // Ignore double clicks by doing the same as on single click
-          await weapon.toChat();
+          await weapon.attack();
           clickCount = 0;
         } else if (clickCount === 1) {
           setTimeout(async () => {
             if (clickCount === 1) {
-              await weapon.toChat();
+              weapon.attack();
             }
             clickCount = 0;
           }, CONFIG.RQG.dblClickTimeout);
@@ -1296,7 +1251,8 @@ export class RqgActorSheet extends ActorSheet<
         await r.evaluate({ async: true });
         await r.toMessage({
           speaker: ChatMessage.getSpeaker(),
-          type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+          // @ts-expect-error CHAT_MESSAGE_STYLES
+          type: CONST.CHAT_MESSAGE_STYLES.ROLL,
           flavor: `damage`,
         });
       });
@@ -1425,7 +1381,8 @@ export class RqgActorSheet extends ActorSheet<
       if (getGameUser().isGM) {
         await combat.deleteEmbeddedDocuments("Combatant", combatantIdsToDelete);
       } else {
-        socketSend("deleteCombatant", {
+        socketSend({
+          action: "deleteCombatant",
           combatId: combat.id,
           idsToDelete: combatantIdsToDelete,
         });

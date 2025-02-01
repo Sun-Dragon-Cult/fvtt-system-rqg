@@ -1,5 +1,4 @@
 import type { ItemData } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs";
-import type { ResultEnum } from "../data-model/shared/ability";
 import type { RqgActor } from "../actors/rqgActor";
 import type { RqgItem } from "./rqgItem";
 
@@ -9,20 +8,6 @@ import type { RqgItem } from "./rqgItem";
 export abstract class AbstractEmbeddedItem {
   // TODO ***
   // public static init() {}
-
-  /**
-   * Send this item to a chat message to select option before doing a roll against it.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static async toChat(item: RqgItem): Promise<void> {}
-
-  /**
-   * Do a roll immediately with specified options.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static async abilityRoll(item: RqgItem, options: object): Promise<ResultEnum | undefined> {
-    return;
-  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static preEmbedItem(actor: RqgActor, item: ItemData, options: object[], userId: string): void {}

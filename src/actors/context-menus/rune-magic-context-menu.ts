@@ -18,10 +18,11 @@ export const runeMagicMenuOptions = (actor: RqgActor): ContextMenu.Item[] => [
     name: localize("RQG.Game.RollChat"),
     icon: contextMenuRunes.RollViaChat,
     condition: () => true,
-    callback: async (el: JQuery) => {
-      const itemId = getRequiredDomDataset(el, "item-id");
-      const item = actor.items.get(itemId);
-      await item?.toChat();
+    callback: async () => {
+      // const itemId = getRequiredDomDataset(el, "item-id");
+      // const item = actor.items.get(itemId);
+      // TODO use future RuneMagicRoll
+      // await item?.toChat();
     },
   },
   {
@@ -37,7 +38,8 @@ export const runeMagicMenuOptions = (actor: RqgActor): ContextMenu.Item[] => [
       const itemId = getRequiredDomDataset(el, "item-id");
       const item = actor.items.get(itemId);
       assertItemType(item?.type, ItemTypeEnum.RuneMagic);
-      item.abilityRoll({ runePointCost: 1, magicPointBoost: 0 });
+      // TODO use future RuneMagicRoll
+      // item.abilityRoll({ runePointCost: 1, magicPointBoost: 0 });
     },
   },
   {

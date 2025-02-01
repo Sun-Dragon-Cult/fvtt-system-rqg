@@ -18,7 +18,7 @@ export interface IconSettingsData {
   [ItemTypeEnum.Skill]: string;
   [ItemTypeEnum.SpiritMagic]: string;
   [ItemTypeEnum.Weapon]: string;
-  Reputation: string;
+  reputation: string;
 }
 
 export class DefaultItemIconSettings extends FormApplication<

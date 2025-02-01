@@ -9,13 +9,27 @@ import { WeaponSheet } from "./weapon-item/weaponSheet";
 import { SpiritMagicSheet } from "./spirit-magic-item/spiritMagicSheet";
 import { CultSheet } from "./cult-item/cultSheet";
 import { RuneMagicSheet } from "./rune-magic-item/runeMagicSheet";
-import { activateChatTab, getGame, hasOwnProperty, localize, RqgError } from "../system/util";
+import { assertItemType, getGame, hasOwnProperty, localize, RqgError } from "../system/util";
 import { HomelandSheet } from "./homeland-item/homelandSheet";
 import { OccupationSheet } from "./occupation-item/occupationSheet";
 import { systemId } from "../system/config";
-import { ResultEnum, ResultMessage } from "../data-model/shared/ability";
 import type { DocumentModificationOptions } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/document.mjs";
-import type { ChatSpeakerDataProperties } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/chatSpeakerData";
+import { AbilitySuccessLevelEnum } from "../rolls/AbilityRoll/AbilityRoll.defs";
+import { AbilityRoll } from "../rolls/AbilityRoll/AbilityRoll";
+import { AbilityRollOptions } from "../rolls/AbilityRoll/AbilityRoll.types";
+import { AbilityRollDialog } from "../applications/AbilityRollDialog/abilityRollDialog";
+import { SpiritMagicRollOptions } from "../rolls/SpiritMagicRoll/SpiritMagicRoll.types";
+import { SpiritMagicRoll } from "../rolls/SpiritMagicRoll/SpiritMagicRoll";
+import { SpiritMagicRollDialog } from "../applications/SpiritMagicRollDialog/spiritMagicRollDialog";
+import { RuneMagicRollDialog } from "../applications/RuneMagicRollDialog/runeMagicRollDialog";
+import { RuneMagicRoll } from "../rolls/RuneMagicRoll/RuneMagicRoll";
+import { RuneMagicRollOptions } from "../rolls/RuneMagicRoll/RuneMagicRoll.types";
+import { RuneMagic } from "./rune-magic-item/runeMagic";
+import { SpellRangeEnum } from "../data-model/item-data/spell";
+import { AttackDialog } from "../applications/AttackFlow/attackDialog";
+import { AttackDialogOptions } from "../chat/RqgChatMessage.types";
+import { UsageType } from "../data-model/item-data/weaponData";
+import { DamageDegree } from "../system/combatCalculations.types";
 
 export class RqgItem extends Item {
   public static init() {
@@ -122,84 +136,232 @@ export class RqgItem extends Item {
   declare system: any; // v10 type workaround
   declare flags: FlagConfig["Item"]; // type workaround
 
-  public async toChat(): Promise<void> {
-    if (!this.isEmbedded) {
-      const msg = "Item is not embedded";
-      ui.notifications?.error(msg);
-      throw new RqgError(msg, this);
-    }
-    activateChatTab();
-    await ResponsibleItemClass.get(this.type)?.toChat(this);
-  }
-
-  public async abilityRoll(options: object = {}): Promise<ResultEnum | undefined> {
-    if (!this.isEmbedded) {
-      const msg = "Item is not embedded";
-      ui.notifications?.error(msg);
-      throw new RqgError(msg, this);
-    }
-    activateChatTab();
-    return ResponsibleItemClass.get(this.type)?.abilityRoll(this, options);
+  /**
+   * Open a dialog for an AbilityRoll
+   */
+  public async abilityRoll(options: Partial<AbilityRollOptions> = {}): Promise<void> {
+    await new AbilityRollDialog(this, options).render(true);
   }
 
   /**
-   * Common code to do a roll to chat.
+   * Do an abilityRoll and handle checking experience afterward.
    */
-  async _roll(
-    flavor: string,
-    chance: number,
-    chanceMod: number, // TODO supply full EffectModifier so it's possible to show "Broadsword (Bladesharp +10%, Darkness -70%) Fumble"
-    speaker: ChatSpeakerDataProperties,
-    resultMessages?: ResultMessage[],
-  ): Promise<ResultEnum> {
-    chance = chance || 0; // Handle NaN
-    chanceMod = chanceMod || 0;
-    const r = new Roll("1d100");
-    await r.evaluate({ async: true });
-    const modifiedChance: number = chance + chanceMod;
-    const useSpecialCriticals = getGame().settings.get(systemId, "specialCrit");
-    const result = this.evaluateResult(modifiedChance, r.total!, useSpecialCriticals);
-    let resultMsgHtml: string | undefined = "";
-    if (resultMessages) {
-      resultMsgHtml = resultMessages.find((i) => i.result === result)?.html;
+  public async abilityRollImmediate(
+    options: Omit<AbilityRollOptions, "naturalSkill"> = {},
+  ): Promise<void> {
+    if (!this.isEmbedded) {
+      const msg = "Item is not embedded";
+      ui.notifications?.error(msg);
+      throw new RqgError(msg, this);
     }
-    const sign = chanceMod > 0 ? "+" : "";
-    const chanceModText = chanceMod ? `${sign}${chanceMod}` : "";
-    const resultText = localize(`RQG.Game.ResultEnum.${result}`);
-    await r.toMessage({
-      flavor: `${flavor} (${chance}${chanceModText}%) <h1>${resultText}</h1><div>${resultMsgHtml}</div>`,
+
+    const chance: number = Number(this.system.chance) || 0; // Handle NaN
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor ?? undefined });
+    const useSpecialCriticals = getGame().settings.get(systemId, "specialCrit");
+
+    const abilityRoll = await AbilityRoll.rollAndShow({
+      naturalSkill: chance,
+      modifiers: options?.modifiers,
+      abilityName: this.name ?? undefined,
+      abilityType: this.type,
+      abilityImg: this.img ?? undefined,
+      useSpecialCriticals: useSpecialCriticals,
+      resultMessages: options?.resultMessages,
       speaker: speaker,
-      type: CONST.CHAT_MESSAGE_TYPES.ROLL,
     });
-    return result;
+    if (!abilityRoll.successLevel) {
+      throw new RqgError("Evaluated AbilityRoll didn't give successLevel");
+    }
+    await this.checkExperience(abilityRoll.successLevel);
   }
 
-  private evaluateResult(chance: number, roll: number, useSpecialCriticals: boolean): ResultEnum {
-    chance = Math.max(0, chance); // -50% = 0%
-
-    const hyperCritical = useSpecialCriticals && chance >= 100 ? Math.ceil(chance / 500) : 0;
-    const specialCritical = useSpecialCriticals && chance >= 100 ? Math.ceil(chance / 100) : 0;
-
-    const critical = Math.max(1, Math.ceil((chance - 29) / 20) + 1);
-    const special =
-      chance === 6 || chance === 7 ? 2 : Math.min(95, Math.max(1, Math.ceil((chance - 7) / 5) + 1));
-    const fumble = Math.min(100, 100 - Math.ceil((100 - chance - 9) / 20) + 1);
-    const success = Math.min(95, Math.max(chance, 5));
-    const fail = fumble === 96 ? 95 : Math.max(96, fumble - 1);
-    const lookup = [
-      { limit: hyperCritical, result: ResultEnum.HyperCritical },
-      { limit: specialCritical, result: ResultEnum.SpecialCritical },
-      { limit: critical, result: ResultEnum.Critical },
-      { limit: special, result: ResultEnum.Special },
-      { limit: success, result: ResultEnum.Success },
-      { limit: fail, result: ResultEnum.Failure },
-      { limit: Infinity, result: ResultEnum.Fumble },
-    ];
-    return lookup.filter((v) => roll <= v.limit)[0].result;
+  /**
+   * Open a dialog for a SpiritMagicRoll
+   */
+  public async spiritMagicRoll(options: Partial<SpiritMagicRollOptions> = {}): Promise<void> {
+    assertItemType(this.type, ItemTypeEnum.SpiritMagic);
+    await new SpiritMagicRollDialog(this, options).render(true);
   }
 
-  public async checkExperience(result: ResultEnum | undefined): Promise<void> {
-    if (result && result <= ResultEnum.Success && !(this.system as any).hasExperience) {
+  /**
+   * Do a SpiritMagicRoll and possibly draw magic points afterward
+   */
+  public async spiritMagicRollImmediate(
+    options: Omit<SpiritMagicRollOptions, "powX5"> = { levelUsed: this.system.points },
+  ): Promise<void> {
+    if (!this.isEmbedded) {
+      const msg = "Item is not embedded";
+      ui.notifications?.error(msg);
+      throw new RqgError(msg, this);
+    }
+
+    const powX5: number = (Number(this.parent?.system.characteristics.power.value) || 0) * 5; // Handle NaN
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor ?? undefined });
+    const useSpecialCriticals = getGame().settings.get(systemId, "specialCrit");
+
+    const spiritMagicRoll = await SpiritMagicRoll.rollAndShow({
+      powX5: powX5,
+      levelUsed: options.levelUsed ?? this.system.points,
+      magicPointBoost: options.magicPointBoost ?? 0,
+      modifiers: options?.modifiers,
+      spellName: this.name ?? undefined,
+      spellImg: this.img ?? undefined,
+      useSpecialCriticals: useSpecialCriticals,
+      speaker: speaker,
+    });
+    if (!spiritMagicRoll.successLevel) {
+      throw new RqgError("Evaluated AbilityRoll didn't give successLevel");
+    }
+    const mpCost = options.levelUsed + (options.magicPointBoost ?? 0);
+    await this.actor?.drawMagicPoints(mpCost, spiritMagicRoll.successLevel);
+  }
+
+  /**
+   * Open a dialog for a RuneMagicRoll
+   */
+  public async runeMagicRoll(options: Partial<RuneMagicRollOptions> = {}): Promise<void> {
+    assertItemType(this.type, ItemTypeEnum.RuneMagic);
+    await new RuneMagicRollDialog(this, options).render(true);
+  }
+
+  /**
+   * Do a runeMagicRoll and possibly draw rune and magic points afterward. Also add experience to used rune.
+   */
+  public async runeMagicRollImmediate(options: Partial<RuneMagicRollOptions> = {}): Promise<void> {
+    assertItemType(this.type, ItemTypeEnum.RuneMagic);
+    if (!this.isEmbedded) {
+      const msg = "Rune Magic item is not embedded";
+      ui.notifications?.error(msg);
+      throw new RqgError(msg, this);
+    }
+
+    const cult = this.parent?.items.find((i) => i.id === this.system.cultId);
+    if (!cult) {
+      const msg = "Rune Magic item isn't connected to a cult";
+      ui.notifications?.error(msg);
+      throw new RqgError(msg, this);
+    }
+
+    const validationError = RuneMagic.hasEnoughToCastSpell(
+      cult,
+      options.levelUsed,
+      options.magicPointBoost,
+    );
+    if (validationError) {
+      ui.notifications?.warn(validationError);
+      return;
+    }
+
+    const speaker = ChatMessage.getSpeaker({ actor: this.actor ?? undefined });
+    const useSpecialCriticals = getGame().settings.get(systemId, "specialCrit");
+    const usedRune = options.usedRune
+      ? options.usedRune
+      : RuneMagic.getStrongestRune(RuneMagic.getEligibleRunes(this));
+    if (!usedRune) {
+      const msg = "Could not find a rune to use for rune magic";
+      ui.notifications?.warn(msg);
+      return;
+    }
+
+    const runeMagicRoll = await RuneMagicRoll.rollAndShow({
+      usedRune: usedRune,
+      runeMagicItem: this,
+      levelUsed: options.levelUsed ?? this.system.points,
+      magicPointBoost: options.magicPointBoost ?? 0,
+      modifiers: options?.modifiers ?? [],
+      useSpecialCriticals: useSpecialCriticals,
+      speaker: speaker,
+    });
+    if (!runeMagicRoll.successLevel) {
+      throw new RqgError("Evaluated RuneMagicRoll didn't give successLevel");
+    }
+    const mpCost = options.magicPointBoost ?? 0;
+    const rpCost = options.levelUsed ?? this.system.points;
+    await RuneMagic.handleRollResult(runeMagicRoll.successLevel, rpCost, mpCost, usedRune, this);
+  }
+
+  /**
+   * Open an attackDialog to initiate an attack sequence
+   */
+  public async attack(options: Partial<AttackDialogOptions> = {}): Promise<void> {
+    assertItemType(this.type, ItemTypeEnum.Weapon);
+    await new AttackDialog(this, options).render(true);
+  }
+
+  /**
+   * Get a damage Roll depending on weapon usage and success level.
+   */
+  public getDamageFormula(
+    usage: UsageType | undefined,
+    damageDegree: DamageDegree,
+  ): string | undefined {
+    if (!usage) {
+      return undefined;
+    }
+    assertItemType(this.type, ItemTypeEnum.Weapon);
+    const weaponDamage = this.system.usage[usage].damage;
+
+    switch (damageDegree) {
+      case "none": {
+        return undefined;
+      }
+
+      case "normal": {
+        const { damageFormula, damageBonus } =
+          this.getNormalizedDamageFormulaAndDamageBonus(weaponDamage);
+        return `${this.formatDamagePart(damageFormula, "weapon damage")}${damageBonus}`;
+      }
+      case "special":
+      case "maxSpecial": {
+        const { damageFormula, damageBonus } =
+          this.getNormalizedDamageFormulaAndDamageBonus(weaponDamage);
+        return `${this.formatDamagePart(damageFormula, "weapon damage")} + ${this.formatDamagePart(damageFormula, "special damage")}${damageBonus}`;
+      }
+      default: {
+        throw new RqgError("Tried to get damageFormula for invalid damageDegree");
+      }
+    }
+  }
+
+  private getNormalizedDamageFormulaAndDamageBonus(damageFormula: string): {
+    damageFormula: string;
+    damageBonus: string;
+  } {
+    const normalizedDamageFormula = damageFormula.replaceAll(" ", "");
+    const damageFormulaWithoutDb = normalizedDamageFormula.replaceAll(/\+db\/2|\+db/g, "");
+    const damageBonus = normalizedDamageFormula.includes("db/2")
+      ? "+db/2"
+      : normalizedDamageFormula.includes("db")
+        ? "+db"
+        : "";
+
+    return {
+      damageFormula: damageFormulaWithoutDb,
+      damageBonus: damageBonus,
+    };
+  }
+
+  private formatDamagePart(damageFormula: string, description: string): string {
+    const compoundFormulaRegex = new RegExp("[+-]");
+    const isCompoundFormula = compoundFormulaRegex.test(damageFormula);
+
+    if (isCompoundFormula) {
+      return `(${damageFormula})[${description}]`;
+    } else {
+      return `${damageFormula}[${description}]`;
+    }
+  }
+
+  /**
+   * Give an experience check to this item if the result is a success or greater
+   * and the item can get experience.
+   */
+  public async checkExperience(result: AbilitySuccessLevelEnum | undefined): Promise<void> {
+    if (
+      result &&
+      result <= AbilitySuccessLevelEnum.Success &&
+      !(this.system as any).hasExperience
+    ) {
       await this.awardExperience();
     }
   }
@@ -227,6 +389,72 @@ export class RqgItem extends Item {
       ui.notifications?.error(msg, { console: false });
       console.error(msg);
     }
+  }
+
+  /**
+   * Used for Rune & Spirit Magic items to construct a descriptions close to what as
+   * is used in the books. The "1+" syntax for stackable rune magic is used
+   */
+  get spellSignature(): string {
+    if (!hasOwnProperty(this.system, "points")) {
+      console.error("RQG | Tried to get spellSignature on a non spell item");
+      return "";
+    }
+
+    const descriptionParts = [];
+
+    const stackableRuneMagic = this.system.isStackable ? "+" : "";
+    const variableSpiritMagic = this.system.isVariable
+      ? " " + localize("RQG.Item.SpiritMagic.Variable")
+      : "";
+    const pointsTranslated = localize("RQG.Item.RuneMagic.Points");
+    descriptionParts.push(
+      `${this.system.points}${stackableRuneMagic} ${pointsTranslated}${variableSpiritMagic}`,
+    );
+
+    if (this.system.isRitual) {
+      descriptionParts.push(localize("RQG.Item.Spell.Ritual"));
+    }
+
+    if (this.system.isEnchantment) {
+      descriptionParts.push(localize("RQG.Item.Spell.Enchantment"));
+    }
+
+    if (this.system.castingRange) {
+      const rangeValueTranslation = localize(
+        "RQG.Item.Spell.RangeEnum." + this.system.castingRange,
+      );
+      const rangeTranslation = localize("RQG.Item.SpiritMagic.Range");
+      const translation =
+        this.system.castingRange === SpellRangeEnum.Special
+          ? `${rangeTranslation} (${rangeValueTranslation.toLowerCase()})`
+          : rangeValueTranslation;
+      descriptionParts.push(translation);
+    }
+
+    if (this.system.duration) {
+      const durationValueTranslation = localize(
+        "RQG.Item.Spell.DurationEnum." + this.system.duration,
+      );
+      const durationTranslation = localize("RQG.Item.SpiritMagic.Duration");
+      const translation =
+        this.system.duration === SpellRangeEnum.Special
+          ? `${durationTranslation} (${durationValueTranslation.toLowerCase()})`
+          : durationValueTranslation;
+      descriptionParts.push(translation);
+    }
+
+    if (this.system.concentration && this.type === ItemTypeEnum.SpiritMagic) {
+      descriptionParts.push(
+        localize("RQG.Item.Spell.ConcentrationEnum." + this.system.concentration),
+      );
+    }
+
+    if (this.system.isOneUse && this.type === ItemTypeEnum.RuneMagic) {
+      descriptionParts.push(localize("RQG.Item.RuneMagic.OneUse"));
+    }
+
+    return descriptionParts.join(", ");
   }
 
   protected _onCreate(

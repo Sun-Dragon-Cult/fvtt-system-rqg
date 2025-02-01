@@ -10,6 +10,12 @@ body {
   background: url("assets/images/ui/sacred-time.webp") no-repeat;
 }
 
+// adding attribute readonly to the input excludes it from the form application?
+input.readonly {
+  border: none;
+  pointer-events: none;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -249,6 +255,15 @@ body {
     font-size: 14px;
     line-height: 28px;
     font-family: var(--font-primary);
+  }
+
+  input:read-only {
+      border: none;
+      color: var(--color-text-dark-secondary);
+  }
+
+  .mb-1-5rem {
+    margin-bottom: 1.5rem;
   }
 
   .ml-5 {
@@ -906,6 +921,102 @@ body {
   }
 }
 
+.chat-message {
+
+  .acting-img {
+    width: 25px;
+    flex: unset;
+    border: none;
+  }
+
+  .dice-tooltip {
+    text-align: end;
+  }
+
+  .roll-action {
+    font-size: var(--font-size-18);
+    font-weight: bold;
+    color: var(--color-text-dark-primary);
+  }
+
+  .roll-level {
+    font-size: var(--font-size-16);
+  }
+
+  .dice-total {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    mix-blend-mode: multiply;
+
+    .target {
+      font-size: var(--font-size-14);
+    }
+
+    &.success-level-0, &.success-level-1, &.success-level-2  { // Crit and better
+      background-color: #6FD042CC;
+      border: 4px outset #ffcf00;
+      border-radius: 14px;
+      box-shadow: inset 3px 5px 12px 3px #ffd800cc;
+    }
+
+    &.success-level-3 { // Special Success
+      background-color: #6FD042CC;
+      border: 4px groove #ffcf00;
+      border-radius: 10px;
+    }
+
+    &.success-level-4 { // Success
+      background-color: #6FD042CC;
+    }
+
+    &.success-level-5 { // Fail
+      background-color: #CECBC5CC;
+    }
+
+    &.success-level-6 { // Fumble
+      background-color: #E23333CC;
+      box-shadow: inset 0 0 3px 0 black;
+      clip-path: polygon(
+          0% 17%,
+          7% 17%,
+          4% 0%,
+
+          97% 0%,
+          93% 17%,
+          100% 17%,
+
+          100% 83%,
+          93% 83%,
+          96% 100%,
+
+          4% 100%,
+          7% 83%,
+          0% 83%
+      );
+    }
+  }
+
+  .rqg.flavor {
+    position: relative;
+    width: 100%;
+    display: block;
+    margin-left:auto;
+    margin-right:auto;
+
+    img {
+      position: absolute;
+      top: -1.6rem;
+      height: 5rem;
+      border: none;
+      mix-blend-mode: overlay;
+      display: block;
+      width: 100%;
+      filter: invert(0.9) drop-shadow(0px 4px 4px black)
+    }
+  }
+}
+
 .rqg.sheet {
   input {
     width: inherit;
@@ -1151,3 +1262,33 @@ body {
     width: 100%;
   }
 }
+
+
+
+.rqg.form.roll-dialog {
+
+  .roll-header {
+    margin: -8px -8px 1.5rem;
+    padding: 7px;
+    box-shadow: 0px -3px 11px 0px;
+    background-color: var(--color-text-light-highlight);
+    text-align: center;
+
+    .sub-header {
+      font-style: italic;
+      margin-top: -2px;
+    }
+  }
+
+  .target-box {
+    flex: none;
+    text-align: center;
+    border: inset;
+    padding: 4px;
+  }
+
+  button {
+    background-color: var(--color-text-light-highlight);
+  }
+}
+

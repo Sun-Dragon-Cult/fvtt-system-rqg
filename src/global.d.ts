@@ -67,6 +67,19 @@ declare global {
 }
 
 declare global {
+  const CONST: {
+    CHAT_MESSAGE_STYLES: {
+      OTHER: 0;
+      OOC: 1;
+      IC: 2;
+      EMOTE: 3;
+      WHISPER: 4;
+      ROLL: 5;
+    };
+  };
+}
+
+declare global {
   interface TokenDocument {
     delta: any;
   }
